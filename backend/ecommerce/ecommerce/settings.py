@@ -135,16 +135,24 @@ if DEBUG or not HAS_CLOUDINARY:
     # Fallback to local storage in development or if Cloudinary is not configured
     STORAGES["default"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
 else:
-    if os.getenv("CLOUDINARY_URL"):
+    # Parse CLOUDINARY_URL into individual credentials
+    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+    _cloudinary_url = os.getenv("CLOUDINARY_URL", "")
+    if _cloudinary_url:
+        from urllib.parse import urlparse
+        _parsed = urlparse(_cloudinary_url)
         CLOUDINARY_STORAGE = {
-            'CLOUDINARY_URL': os.getenv('CLOUDINARY_URL')
+            'CLOUD_NAME': _parsed.hostname or '',
+            'API_KEY': _parsed.username or '',
+            'API_SECRET': _parsed.password or '',
         }
     else:
         CLOUDINARY_STORAGE = {
             'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
             'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-            'API_SECRET': os.getenv('CLOUDINARY_API_SECRET') or os.getenv('CLOUDINARY_API_SECRET_KEY')
+            'API_SECRET': os.getenv('CLOUDINARY_API_SECRET') or os.getenv('CLOUDINARY_API_SECRET_KEY'),
         }
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
