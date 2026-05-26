@@ -1,6 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import API from '../api/axios';
 
+function getAuthErrorPayload(err, fallback) {
+    if (err.response?.data) {
+        return err.response.data;
+    }
+    if (err.code === 'ERR_NETWORK') {
+        return { detail: 'Cannot reach server. Check backend URL and run server.' };
+    }
+    if (err.code === 'ECONNABORTED') {
+        return { detail: 'Request timed out. Please try again.' };
+    }
+    return { detail: fallback };
+}
+
 // ─── Async Thunks ────────────────────────────────────────────────
 
 export const loginUser = createAsyncThunk(
@@ -12,7 +25,7 @@ export const loginUser = createAsyncThunk(
             localStorage.setItem('user', JSON.stringify(res.data.user));
             return res.data;
         } catch (err) {
-            return rejectWithValue(err.response?.data || { detail: 'Login failed' });
+            return rejectWithValue(getAuthErrorPayload(err, 'Login failed'));
         }
     }
 );
@@ -26,7 +39,7 @@ export const registerUser = createAsyncThunk(
             localStorage.setItem('user', JSON.stringify(res.data.user));
             return res.data;
         } catch (err) {
-            return rejectWithValue(err.response?.data || { detail: 'Registration failed' });
+            return rejectWithValue(getAuthErrorPayload(err, 'Registration failed'));
         }
     }
 );
@@ -39,7 +52,7 @@ export const updateUserProfile = createAsyncThunk(
             localStorage.setItem('user', JSON.stringify(res.data));
             return res.data;
         } catch (err) {
-            return rejectWithValue(err.response?.data || { detail: 'Profile update failed' });
+            return rejectWithValue(getAuthErrorPayload(err, 'Profile update failed'));
         }
     }
 );

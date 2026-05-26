@@ -717,10 +717,16 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
+        identifier = (request.data.get("username") or "").strip()
+        password = request.data.get("password") or ""
 
-        user = authenticate(username=username, password=password)
+        username = identifier
+        if "@" in identifier:
+            email_user = User.objects.filter(email__iexact=identifier).order_by("id").first()
+            if email_user:
+                username = email_user.get_username()
+
+        user = authenticate(request, username=username, password=password)
         if user is None:
             return Response(
                 {"error": "Invalid username or password"},

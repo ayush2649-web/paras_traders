@@ -28,7 +28,7 @@ export default function Register() {
             toast.success('Account created successfully!');
             navigate('/');
         } catch (err) {
-            const errors = err.response?.data;
+            const errors = err.response?.data || err;
             if (errors) {
                 Object.values(errors).flat().forEach((msg) => toast.error(msg));
             } else {

@@ -32,7 +32,9 @@ export default function Login() {
             toast.success('Welcome back!');
             window.location.replace(getDefaultPostLoginPath(loggedInUser));
         } catch (err) {
-            const message = err.response?.data?.error
+            const message = err?.error
+                || err?.detail
+                || err.response?.data?.error
                 || err.response?.data?.detail
                 || (err.code === 'ERR_NETWORK' ? 'Cannot reach server. Check backend URL and run server.' : null)
                 || (err.code === 'ECONNABORTED' ? 'Request timed out. Please try again.' : null)

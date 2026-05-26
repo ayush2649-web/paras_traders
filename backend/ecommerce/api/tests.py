@@ -14,6 +14,45 @@ from .models import (
 )
 
 
+class AuthAPITests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='buyer',
+            email='buyer@example.com',
+            password='buyer12345'
+        )
+        UserProfile.objects.create(user=self.user)
+
+    def test_login_accepts_username(self):
+        response = self.client.post('/api/auth/login/', {
+            'username': 'buyer',
+            'password': 'buyer12345',
+        })
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['username'], 'buyer')
+        self.assertIn('access', response.data['tokens'])
+        self.assertIn('refresh', response.data['tokens'])
+
+    def test_login_accepts_email_case_insensitive(self):
+        response = self.client.post('/api/auth/login/', {
+            'username': 'BUYER@example.com',
+            'password': 'buyer12345',
+        })
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['email'], 'buyer@example.com')
+
+    def test_login_rejects_invalid_credentials(self):
+        response = self.client.post('/api/auth/login/', {
+            'username': 'buyer@example.com',
+            'password': 'wrong-password',
+        })
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['error'], 'Invalid username or password')
+
+
 class OrderCancellationAPITests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
