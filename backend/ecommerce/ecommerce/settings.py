@@ -125,8 +125,8 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Cloudinary Configuration
-if not os.getenv("CLOUDINARY_URL"):
-    # Fallback to local storage if Cloudinary is not configured
+if DEBUG or not os.getenv("CLOUDINARY_URL"):
+    # Fallback to local storage in development or if Cloudinary is not configured
     STORAGES["default"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

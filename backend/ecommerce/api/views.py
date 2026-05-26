@@ -323,7 +323,9 @@ def get_merchant_product_limit_state(user, subscription=None):
     product_count = Product.objects.filter(seller=user).count()
     plan = getattr(subscription, "plan", None)
     product_limit = getattr(plan, "product_limit", None) if plan else None
-    remaining_slots = None if not product_limit else max(product_limit - product_count, 0)
+    remaining_slots = (
+        None if not product_limit else max(product_limit - product_count, 0)
+    )
     can_add_products = bool(subscription) and (
         product_limit is None or product_count < product_limit
     )
@@ -472,7 +474,9 @@ def authorize_user_from_job_application(application):
     application.applicant_user = user
 
     if application.role_applied == "merchant_partner":
-        selected_plan = application.selected_subscription_plan or get_default_merchant_plan()
+        selected_plan = (
+            application.selected_subscription_plan or get_default_merchant_plan()
+        )
         selected_billing_cycle = application.selected_billing_cycle or "monthly"
         if not selected_plan:
             return None, "No merchant subscription plan is configured yet."
@@ -509,7 +513,9 @@ def serialize_admin_user(user):
     gender_choices = dict(UserProfile.GENDER_CHOICES)
     employee_role = getattr(profile, "employee_role", "") if profile else ""
     gender = getattr(profile, "gender", "") if profile else ""
-    merchant_subscription = get_active_merchant_subscription(user) or get_latest_merchant_subscription(user)
+    merchant_subscription = get_active_merchant_subscription(
+        user
+    ) or get_latest_merchant_subscription(user)
     return {
         "id": user.id,
         "username": user.username,
@@ -722,7 +728,9 @@ class LoginView(APIView):
 
         username = identifier
         if "@" in identifier:
-            email_user = User.objects.filter(email__iexact=identifier).order_by("id").first()
+            email_user = (
+                User.objects.filter(email__iexact=identifier).order_by("id").first()
+            )
             if email_user:
                 username = email_user.get_username()
 
@@ -820,8 +828,11 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         params = self.request.query_params
 
         category = params.get("category")
-        if category:
-            qs = qs.filter(category_id=category)
+        if category and category.lower() != "all" and category.lower() != "null":
+            try:
+                qs = qs.filter(category_id=int(category))
+            except ValueError:
+                pass
 
         min_price = params.get("min_price")
         if min_price:
@@ -2706,9 +2717,11 @@ class AdminJobApplicationListView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        queryset = JobApplication.objects.select_related("applicant_user").exclude(
-            role_applied="merchant_partner"
-        ).order_by("-created_at")
+        queryset = (
+            JobApplication.objects.select_related("applicant_user")
+            .exclude(role_applied="merchant_partner")
+            .order_by("-created_at")
+        )
 
         role_filter = request.query_params.get("role")
         if role_filter in dict(JobApplication.ROLE_CHOICES):
@@ -3214,6 +3227,7 @@ class MerchantProductViewSet(viewsets.ModelViewSet):
         super().initial(request, *args, **kwargs)
         if not self._require_merchant():
             from rest_framework.exceptions import PermissionDenied
+
             raise PermissionDenied("Merchant partner access required.")
 
     def perform_create(self, serializer):
@@ -3247,13 +3261,17 @@ class MerchantProductViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response({"message": "Product deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "Product deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class MerchantOrderViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Read-only view for merchants to see orders containing their products.
     """
+
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -3264,9 +3282,13 @@ class MerchantOrderViewSet(viewsets.ReadOnlyModelViewSet):
 
         if is_full_admin_user(user):
             return Order.objects.all().order_by("-order_date")
-            
+
         # Filter orders that contain at least one item sold by this merchant
-        return Order.objects.filter(items__product__seller=user).distinct().order_by("-order_date")
+        return (
+            Order.objects.filter(items__product__seller=user)
+            .distinct()
+            .order_by("-order_date")
+        )
 
     @action(detail=True, methods=["patch"])
     def update_item_status(self, request, pk=None):
@@ -3285,53 +3307,76 @@ class MerchantOrderViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             item = OrderItem.objects.get(id=item_id, order=order)
         except OrderItem.DoesNotExist:
-            return Response({"error": "Item not found in this order"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Item not found in this order"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         if not is_full_admin_user(user) and item.product.seller != user:
-            return Response({"error": "You can only update your own products"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"error": "You can only update your own products"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         # Assuming OrderItem needs a 'merchant_status' field added later, or we just update the main order status if it's a single-merchant order
-        # For a Zomato-like flow, we'd add 'merchant_status' to OrderItem. 
+        # For a Zomato-like flow, we'd add 'merchant_status' to OrderItem.
         # Using a simple message return for now until OrderItem model is updated.
-        return Response({"message": f"Item {item.product.name} status updated to {new_status}"})
+        return Response(
+            {"message": f"Item {item.product.name} status updated to {new_status}"}
+        )
 
 
 class MerchantSettingsView(APIView):
     """
     Allows a merchant to toggle their store status (Online/Offline) and business hours.
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
         if not is_merchant_partner(user):
-            return Response({"error": "Merchant access required"}, status=status.HTTP_403_FORBIDDEN)
-            
-        profile = getattr(user, 'profile', None)
+            return Response(
+                {"error": "Merchant access required"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        profile = getattr(user, "profile", None)
         if not profile:
-            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         current_subscription = get_active_merchant_subscription(user)
-        latest_subscription = current_subscription or get_latest_merchant_subscription(user)
-        return Response({
-            "store_status": profile.store_status,
-            "business_hours": profile.business_hours,
-            "current_subscription": (
-                MerchantSubscriptionSerializer(latest_subscription).data
-                if latest_subscription
-                else None
-            ),
-            "product_usage": get_merchant_product_limit_state(user, current_subscription),
-        })
+        latest_subscription = current_subscription or get_latest_merchant_subscription(
+            user
+        )
+        return Response(
+            {
+                "store_status": profile.store_status,
+                "business_hours": profile.business_hours,
+                "current_subscription": (
+                    MerchantSubscriptionSerializer(latest_subscription).data
+                    if latest_subscription
+                    else None
+                ),
+                "product_usage": get_merchant_product_limit_state(
+                    user, current_subscription
+                ),
+            }
+        )
 
     def patch(self, request):
         user = request.user
         if not is_merchant_partner(user):
-            return Response({"error": "Merchant access required"}, status=status.HTTP_403_FORBIDDEN)
-            
-        profile = getattr(user, 'profile', None)
+            return Response(
+                {"error": "Merchant access required"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        profile = getattr(user, "profile", None)
         if not profile:
-            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         current_subscription = get_active_merchant_subscription(user)
         if "store_status" in request.data:
@@ -3348,21 +3393,27 @@ class MerchantSettingsView(APIView):
             profile.store_status = desired_status
         if "business_hours" in request.data:
             profile.business_hours = str(request.data["business_hours"]).strip()
-            
+
         profile.save(update_fields=["store_status", "business_hours"])
 
-        latest_subscription = current_subscription or get_latest_merchant_subscription(user)
-        return Response({
-            "message": "Settings updated",
-            "store_status": profile.store_status,
-            "business_hours": profile.business_hours,
-            "current_subscription": (
-                MerchantSubscriptionSerializer(latest_subscription).data
-                if latest_subscription
-                else None
-            ),
-            "product_usage": get_merchant_product_limit_state(user, current_subscription),
-        })
+        latest_subscription = current_subscription or get_latest_merchant_subscription(
+            user
+        )
+        return Response(
+            {
+                "message": "Settings updated",
+                "store_status": profile.store_status,
+                "business_hours": profile.business_hours,
+                "current_subscription": (
+                    MerchantSubscriptionSerializer(latest_subscription).data
+                    if latest_subscription
+                    else None
+                ),
+                "product_usage": get_merchant_product_limit_state(
+                    user, current_subscription
+                ),
+            }
+        )
 
 
 class MerchantAnalyticsView(APIView):
@@ -3400,7 +3451,10 @@ class MerchantAnalyticsView(APIView):
         agg = order_items_qs.filter(
             order__status__in=["confirmed", "shipped", "delivered"]
         ).aggregate(
-            total_revenue=Sum(models.F("price") * models.F("quantity"), output_field=models.DecimalField()),
+            total_revenue=Sum(
+                models.F("price") * models.F("quantity"),
+                output_field=models.DecimalField(),
+            ),
             total_units=Sum("quantity"),
             total_orders=Count("order", distinct=True),
         )
@@ -3410,11 +3464,22 @@ class MerchantAnalyticsView(APIView):
 
         # ── Per-product breakdown ─────────────────────────────────
         product_stats = (
-            order_items_qs.filter(order__status__in=["confirmed", "shipped", "delivered"])
-            .values("product__id", "product__name", "product__price", "product__stock", "product__is_active")
+            order_items_qs.filter(
+                order__status__in=["confirmed", "shipped", "delivered"]
+            )
+            .values(
+                "product__id",
+                "product__name",
+                "product__price",
+                "product__stock",
+                "product__is_active",
+            )
             .annotate(
                 units_sold=Sum("quantity"),
-                revenue=Sum(models.F("price") * models.F("quantity"), output_field=models.DecimalField()),
+                revenue=Sum(
+                    models.F("price") * models.F("quantity"),
+                    output_field=models.DecimalField(),
+                ),
                 order_count=Count("order", distinct=True),
             )
             .order_by("-revenue")
@@ -3447,7 +3512,10 @@ class MerchantAnalyticsView(APIView):
             .extra(select={"month": "strftime('%%Y-%%m', order_date)"})
             .values("month")
             .annotate(
-                revenue=Sum(models.F("price") * models.F("quantity"), output_field=models.DecimalField()),
+                revenue=Sum(
+                    models.F("price") * models.F("quantity"),
+                    output_field=models.DecimalField(),
+                ),
                 units=Sum("quantity"),
                 orders=Count("order", distinct=True),
             )
@@ -3473,16 +3541,18 @@ class MerchantAnalyticsView(APIView):
             "id", "name", "price", "stock", "is_active"
         )
         for p in unsold_products:
-            product_breakdown.append({
-                "product_id": p["id"],
-                "product_name": p["name"],
-                "current_price": float(p["price"]),
-                "current_stock": p["stock"],
-                "is_active": p["is_active"],
-                "units_sold": 0,
-                "revenue": 0.0,
-                "order_count": 0,
-            })
+            product_breakdown.append(
+                {
+                    "product_id": p["id"],
+                    "product_name": p["name"],
+                    "current_price": float(p["price"]),
+                    "current_stock": p["stock"],
+                    "is_active": p["is_active"],
+                    "units_sold": 0,
+                    "revenue": 0.0,
+                    "order_count": 0,
+                }
+            )
 
         return Response(
             {

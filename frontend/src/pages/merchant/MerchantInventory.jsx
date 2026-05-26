@@ -60,6 +60,7 @@ const DEFAULT_NEW_PRODUCT = {
   expiry_date: "",
   is_featured: false,
   is_active: true,
+  image: null,
 };
 
 function normalizeList(payload) {
@@ -166,7 +167,9 @@ export default function MerchantInventory() {
       const categoriesList = Array.isArray(categoriesRes.data)
         ? categoriesRes.data
         : categoriesRes.data?.results || [];
-      setSubscriptionSummary(subscriptionRes.data?.current_subscription || null);
+      setSubscriptionSummary(
+        subscriptionRes.data?.current_subscription || null,
+      );
       setProductUsage(subscriptionRes.data?.product_usage || null);
       setProducts(productsList);
       setCategories(categoriesList);
@@ -306,38 +309,48 @@ export default function MerchantInventory() {
       );
       return;
     }
-    const payload = {
-      name: newProduct.name.trim(),
-      description: newProduct.description.trim(),
-      category: Number(newProduct.category),
-      price: Number(newProduct.price),
-      original_price:
-        newProduct.original_price === ""
-          ? null
-          : Number(newProduct.original_price),
-      stock: Number(newProduct.stock),
-      brand: newProduct.brand.trim(),
-      mfg_date: newProduct.mfg_date || null,
-      expiry_date: newProduct.expiry_date || null,
-      is_featured: Boolean(newProduct.is_featured),
-      is_active: Boolean(newProduct.is_active),
-    };
-    if (!payload.name || !payload.description) {
+    const payload = new FormData();
+    payload.append("name", newProduct.name.trim());
+    payload.append("description", newProduct.description.trim());
+    payload.append("category", Number(newProduct.category));
+    payload.append("price", Number(newProduct.price));
+    if (newProduct.original_price !== "") {
+      payload.append("original_price", Number(newProduct.original_price));
+    }
+    payload.append("stock", Number(newProduct.stock));
+    payload.append("brand", newProduct.brand.trim());
+    if (newProduct.mfg_date) payload.append("mfg_date", newProduct.mfg_date);
+    if (newProduct.expiry_date)
+      payload.append("expiry_date", newProduct.expiry_date);
+    payload.append("is_featured", Boolean(newProduct.is_featured));
+    payload.append("is_active", Boolean(newProduct.is_active));
+
+    if (newProduct.image) {
+      payload.append("image", newProduct.image);
+    }
+
+    if (!newProduct.name.trim() || !newProduct.description.trim()) {
       toast.error("Name and description are required");
       return;
     }
-    if (!Number.isFinite(payload.category) || payload.category <= 0) {
+    if (
+      !Number.isFinite(Number(newProduct.category)) ||
+      Number(newProduct.category) <= 0
+    ) {
       toast.error("Select a category");
       return;
     }
-    if (!Number.isFinite(payload.price) || payload.price <= 0) {
+    if (
+      !Number.isFinite(Number(newProduct.price)) ||
+      Number(newProduct.price) <= 0
+    ) {
       toast.error("Price must be > 0");
       return;
     }
     if (
-      !Number.isFinite(payload.stock) ||
-      payload.stock < 0 ||
-      !Number.isInteger(payload.stock)
+      !Number.isFinite(Number(newProduct.stock)) ||
+      Number(newProduct.stock) < 0 ||
+      !Number.isInteger(Number(newProduct.stock))
     ) {
       toast.error("Stock must be a non-negative whole number");
       return;
@@ -566,7 +579,9 @@ export default function MerchantInventory() {
           {subscriptionSummary?.ends_at && (
             <span className="merch-subscription-banner-meta">
               Renews / ends on{" "}
-              {new Date(subscriptionSummary.ends_at).toLocaleDateString("en-IN")}
+              {new Date(subscriptionSummary.ends_at).toLocaleDateString(
+                "en-IN",
+              )}
             </span>
           )}
           <Link
@@ -739,6 +754,17 @@ export default function MerchantInventory() {
                 value={newProduct.description}
                 onChange={(e) => updateNewField("description", e.target.value)}
                 required
+              />
+            </div>
+
+            <div className="merch-inv-field merch-inv-field-full">
+              <label>
+                <FiImage /> Product Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => updateNewField("image", e.target.files[0])}
               />
             </div>
             <div className="merch-inv-form-footer merch-inv-field-full">

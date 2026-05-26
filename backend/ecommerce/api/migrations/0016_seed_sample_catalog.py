@@ -198,8 +198,8 @@ def seed_sample_catalog(apps, schema_editor):
         {
             "name": "Oral-B iO Series 9",
             "description": "Electric toothbrush with smart brushing recognition, tracking, and magnetic charging.",
-            "price": "18999.00",
-            "original_price": "24999.00",
+            "price": "1899.00",
+            "original_price": "2499.00",
             "category": "Personal Care",
             "stock": 25,
             "brand": "Oral-B",
