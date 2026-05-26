@@ -191,7 +191,9 @@ export default function Products() {
     } else {
       newParams.delete(key);
     }
-    newParams.delete("page");
+    if (key !== "page") {
+      newParams.delete("page");
+    }
     setSearchParams(newParams);
   };
 
