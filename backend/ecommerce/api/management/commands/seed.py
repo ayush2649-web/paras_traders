@@ -110,16 +110,24 @@ class Command(BaseCommand):
                 if updated:
                     product.save()
 
-            # Now handle image assignment if image_filename is specified
+            # Now handle image upload if image_filename is specified
             if image_filename:
                 local_image_path = os.path.join(media_products_dir, image_filename)
                 if os.path.exists(local_image_path):
                     try:
-                        product.image = f"products/{image_filename}"
-                        product.save()
-                        self.stdout.write(f"  Set local image path for product: {product.name}")
+                        # Try uploading through Django's storage backend (Cloudinary in production)
+                        with open(local_image_path, 'rb') as f:
+                            product.image.save(image_filename, File(f), save=True)
+                        self.stdout.write(f"  Uploaded image for product: {product.name}")
                     except Exception as e:
-                        self.stdout.write(self.style.WARNING(f"  Failed to set image for {product.name}: {e}"))
+                        # Fallback: assign local path directly if cloud upload fails
+                        self.stdout.write(self.style.WARNING(f"  Cloud upload failed for {product.name}: {e}"))
+                        try:
+                            product.image = f"products/{image_filename}"
+                            product.save()
+                            self.stdout.write(f"  Fallback: set local image path for {product.name}")
+                        except Exception as e2:
+                            self.stdout.write(self.style.WARNING(f"  Failed to set image for {product.name}: {e2}"))
                 else:
                     self.stdout.write(self.style.WARNING(f"  Image file not found: {local_image_path}"))
 
