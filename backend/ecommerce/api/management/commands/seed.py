@@ -110,16 +110,16 @@ class Command(BaseCommand):
                 if updated:
                     product.save()
 
-            # Now handle image upload if image_filename is specified and image is not already set
-            if image_filename and (not product.image or image_filename not in str(product.image)):
+            # Now handle image assignment if image_filename is specified
+            if image_filename:
                 local_image_path = os.path.join(media_products_dir, image_filename)
                 if os.path.exists(local_image_path):
                     try:
-                        with open(local_image_path, 'rb') as f:
-                            product.image.save(image_filename, File(f), save=True)
-                        self.stdout.write(f"  Uploaded and set image for product: {product.name}")
+                        product.image = f"products/{image_filename}"
+                        product.save()
+                        self.stdout.write(f"  Set local image path for product: {product.name}")
                     except Exception as e:
-                        self.stdout.write(self.style.WARNING(f"  Failed to upload image for {product.name}: {e}"))
+                        self.stdout.write(self.style.WARNING(f"  Failed to set image for {product.name}: {e}"))
                 else:
                     self.stdout.write(self.style.WARNING(f"  Image file not found: {local_image_path}"))
 
