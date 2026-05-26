@@ -53,6 +53,7 @@ build/
 
 # Database
 backend/ecommerce/db.sqlite3
+backend/ecommerce/staticfiles/
 
 # Environment variables
 .env
