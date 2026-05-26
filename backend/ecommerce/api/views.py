@@ -733,6 +733,18 @@ class LoginView(APIView):
             )
             if email_user:
                 username = email_user.get_username()
+            else:
+                user_obj = (
+                    User.objects.filter(username__iexact=identifier).order_by("id").first()
+                )
+                if user_obj:
+                    username = user_obj.username
+        else:
+            user_obj = (
+                User.objects.filter(username__iexact=identifier).order_by("id").first()
+            )
+            if user_obj:
+                username = user_obj.username
 
         user = authenticate(request, username=username, password=password)
         if user is None:
