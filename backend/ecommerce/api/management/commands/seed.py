@@ -114,9 +114,12 @@ class Command(BaseCommand):
             if image_filename and (not product.image or image_filename not in str(product.image)):
                 local_image_path = os.path.join(media_products_dir, image_filename)
                 if os.path.exists(local_image_path):
-                    with open(local_image_path, 'rb') as f:
-                        product.image.save(image_filename, File(f), save=True)
-                    self.stdout.write(f"  Uploaded and set image for product: {product.name}")
+                    try:
+                        with open(local_image_path, 'rb') as f:
+                            product.image.save(image_filename, File(f), save=True)
+                        self.stdout.write(f"  Uploaded and set image for product: {product.name}")
+                    except Exception as e:
+                        self.stdout.write(self.style.WARNING(f"  Failed to upload image for {product.name}: {e}"))
                 else:
                     self.stdout.write(self.style.WARNING(f"  Image file not found: {local_image_path}"))
 
