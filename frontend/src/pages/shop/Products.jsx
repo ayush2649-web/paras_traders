@@ -18,7 +18,7 @@ function formatCurrency(value) {
 function getImageUrl(product) {
   return product.image
     ? getMediaUrl(product.image)
-    : "https://via.placeholder.com/120x120?text=No+Image";
+    : "https://placehold.co/120x120?text=No+Image";
 }
 
 function normalizeCompareValue(value) {

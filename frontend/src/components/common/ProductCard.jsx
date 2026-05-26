@@ -16,7 +16,7 @@ export default function ProductCard({
 }) {
     const imgUrl = product.image
         ? getMediaUrl(product.image)
-        : 'https://via.placeholder.com/300x300?text=No+Image';
+        : 'https://placehold.co/300x300?text=No+Image';
 
     return (
         <div className="product-card">

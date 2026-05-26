@@ -215,7 +215,7 @@ export default function ProductDetail() {
 
     const imgUrl = product.image
         ? getMediaUrl(product.image)
-        : 'https://via.placeholder.com/600x600?text=No+Image';
+        : 'https://placehold.co/600x600?text=No+Image';
     const monthlyEmi = Number(product.price || 0) / emiPlan;
 
     return (

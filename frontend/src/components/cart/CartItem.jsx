@@ -7,7 +7,7 @@ export default function CartItem({ item, onRemove, onUpdateQuantity }) {
     const product = item.product;
     const imgUrl = product?.image
         ? getMediaUrl(product.image)
-        : 'https://via.placeholder.com/120x120?text=No+Image';
+        : 'https://placehold.co/120x120?text=No+Image';
 
     return (
         <div className="cart-item">
