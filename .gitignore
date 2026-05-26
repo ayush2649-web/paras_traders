@@ -1,0 +1,64 @@
+# ==========================
+# Root .gitignore
+# ==========================
+
+# Project report (not needed in repo)
+project_report/
+project_file_structure_and_description.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ========================
+# Frontend (Node / Vite)
+# ========================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/logs/
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# ========================
+# Backend (Python / Django)
+# ========================
+backend/.venv/
+backend/ecommerce/__pycache__/
+backend/ecommerce/api/__pycache__/
+backend/ecommerce/ecommerce/__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Database
+backend/ecommerce/db.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Antigravity
+.antigravityignore
+.gemini/

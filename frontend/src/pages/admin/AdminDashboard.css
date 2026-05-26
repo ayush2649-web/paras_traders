@@ -1,0 +1,183 @@
+.admin-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-page>h1 {
+    color: #fff;
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    background: #1e293b;
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.stat-value {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.dashboard-section {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dashboard-section h2 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+}
+
+.status-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.status-bar-item {}
+
+.status-bar-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.status-bar-label strong {
+    margin-left: auto;
+    color: #e2e8f0;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-bar-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.status-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s;
+}
+
+.admin-table-wrap {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    text-align: left;
+    color: #888;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.admin-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.table-status {
+    font-weight: 600;
+    text-transform: capitalize;
+    font-size: 0.85rem;
+}
+
+.status-select {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.status-select option {
+    background: #1e293b;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mono-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    letter-spacing: 0.5px;
+}
+
+.text-muted {
+    color: #64748b;
+    font-style: italic;
+    font-size: 0.85rem;
+}

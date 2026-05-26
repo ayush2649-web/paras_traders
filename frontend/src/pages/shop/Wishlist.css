@@ -1,0 +1,24 @@
+.wishlist-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.wishlist-page h1 {
+    color: #fff;
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.empty-wishlist {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #888;
+}
+
+.empty-wishlist p {
+    margin-bottom: 1.5rem;
+}

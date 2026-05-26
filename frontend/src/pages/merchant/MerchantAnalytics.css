@@ -1,0 +1,268 @@
+/* ─────────────────────────────────────────────
+   MerchantAnalytics.css – Merchant Analytics Page
+───────────────────────────────────────────── */
+
+.merch-analytics-page {
+    min-height: 100vh;
+    background: #0f1117;
+    color: #e2e8f0;
+    padding: 0 0 4rem;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── Header ── */
+.merch-analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 2rem 2.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: linear-gradient(135deg, #12131c 0%, #171922 100%);
+}
+.merch-analytics-header-text h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    background: linear-gradient(90deg, #34d399, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.merch-analytics-header-text p {
+    color: #94a3b8;
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+}
+.merch-analytics-refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: #94a3b8;
+    transition: all 0.15s;
+}
+.merch-analytics-refresh-btn:hover:not(:disabled) { color: #e2e8f0; border-color: rgba(255,255,255,0.25); }
+.merch-analytics-refresh-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.ma-spin { animation: maSpin 0.9s linear infinite; }
+@keyframes maSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── Loading / Error States ── */
+.merch-analytics-loading,
+.merch-analytics-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 5rem 2rem;
+    color: #64748b;
+    font-size: 1rem;
+}
+.merch-analytics-error { color: #f87171; }
+
+/* ── Summary Cards ── */
+.merch-analytics-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.75rem 2.5rem 1rem;
+}
+.ma-card {
+    flex: 1 1 160px;
+    background: #161821;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+}
+.ma-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+}
+.ma-card-revenue::before { background: linear-gradient(90deg, #34d399, #059669); }
+.ma-card-units::before { background: linear-gradient(90deg, #818cf8, #6366f1); }
+.ma-card-orders::before { background: linear-gradient(90deg, #22d3ee, #0ea5e9); }
+.ma-card-products::before { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.ma-card-active::before { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.ma-card-low::before { background: linear-gradient(90deg, #fb923c, #f97316); }
+.ma-card-out::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+.ma-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.ma-card-icon {
+    font-size: 1.4rem;
+    width: 2.8rem; height: 2.8rem;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.ma-card-revenue .ma-card-icon { background: rgba(52,211,153,0.12); color: #34d399; }
+.ma-card-units .ma-card-icon { background: rgba(99,102,241,0.12); color: #818cf8; }
+.ma-card-orders .ma-card-icon { background: rgba(34,211,238,0.12); color: #22d3ee; }
+.ma-card-products .ma-card-icon { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.ma-card-active .ma-card-icon { background: rgba(74,222,128,0.12); color: #4ade80; }
+.ma-card-low .ma-card-icon { background: rgba(251,146,60,0.12); color: #fb923c; }
+.ma-card-out .ma-card-icon { background: rgba(248,113,113,0.12); color: #f87171; }
+.ma-card-data { min-width: 0; }
+.ma-card-data .ma-label { color: #94a3b8; font-size: 0.78rem; display: block; white-space: nowrap; }
+.ma-card-data .ma-value { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+
+/* ── Section Container ── */
+.merch-analytics-body {
+    padding: 0 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.ma-section {
+    background: #161821;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    overflow: hidden;
+}
+.ma-section-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.ma-section-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e2e8f0;
+}
+.ma-empty {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* ── Top Products Chart ── */
+.ma-top-products { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; }
+.ma-bar-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 100px;
+    align-items: center;
+    gap: 1rem;
+}
+.ma-bar-label { font-size: 0.85rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ma-bar-track {
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+}
+.ma-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #34d399, #22d3ee);
+    transition: width 0.6s ease;
+    min-width: 2px;
+}
+.ma-bar-value { font-size: 0.82rem; font-weight: 600; color: #34d399; text-align: right; }
+
+/* ── Monthly Trend Chart ── */
+.ma-trend-chart { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+.ma-trend-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    height: 140px;
+}
+.ma-trend-col { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex: 1; }
+.ma-trend-bar-wrap {
+    flex: 1; width: 100%; display: flex;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    min-height: 6px;
+}
+.ma-trend-bar {
+    width: 100%;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #818cf8, #6366f1);
+    transition: height 0.5s ease;
+    min-height: 4px;
+}
+.ma-trend-month { font-size: 0.72rem; color: #64748b; white-space: nowrap; }
+.ma-trend-rev { font-size: 0.7rem; color: #818cf8; font-weight: 600; }
+.ma-trend-empty { color: #64748b; font-size: 0.9rem; text-align: center; padding: 2.5rem; }
+
+/* ── Product Breakdown Table ── */
+.ma-table-wrap { overflow-x: auto; }
+.ma-table { width: 100%; border-collapse: collapse; }
+.ma-table th {
+    padding: 0.85rem 1.2rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(0,0,0,0.2);
+}
+.ma-table td {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: middle;
+}
+.ma-table tr:last-child td { border-bottom: none; }
+.ma-table tr:hover td { background: rgba(255,255,255,0.02); }
+.ma-product-name { font-weight: 600; color: #e2e8f0; }
+.ma-product-id { color: #64748b; font-size: 0.75rem; margin-left: 0.35rem; }
+.ma-revenue-cell { font-weight: 700; color: #34d399; }
+.ma-units-cell { color: #818cf8; font-weight: 600; }
+.ma-muted { color: #475569; }
+.ma-stock-badge {
+    padding: 0.2rem 0.6rem; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 600;
+}
+.ma-active-badge { background: rgba(34,197,94,0.12); color: #4ade80; }
+.ma-inactive-badge { background: rgba(239,68,68,0.12); color: #f87171; }
+.ma-badge-danger { background: rgba(239,68,68,0.15); color: #f87171; }
+.ma-badge-warning { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.ma-badge-info { background: rgba(99,102,241,0.12); color: #818cf8; }
+.ma-badge-success { background: rgba(34,197,94,0.12); color: #4ade80; }
+
+/* ── Two-col layout ── */
+.ma-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .ma-two-col { grid-template-columns: 1fr; }
+    .ma-bar-row { grid-template-columns: 120px 1fr 90px; }
+}
+@media (max-width: 600px) {
+    .merch-analytics-summary,
+    .merch-analytics-body,
+    .merch-analytics-header { padding-left: 1rem; padding-right: 1rem; }
+    .ma-bar-row { grid-template-columns: 80px 1fr 70px; }
+}
