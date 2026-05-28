@@ -10,6 +10,19 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write('Seeding database...')
 
+        # Clean up and merge migration naming mismatches
+        for old_name, new_name in [
+            ("Prestige Omega Cookware Set", "Prestige Omega Deluxe Cookware Set"),
+            ("Premium Yoga Mat 6mm", "Yoga Mat Premium 6mm"),
+        ]:
+            old_p = Product.objects.filter(name=old_name).first()
+            new_p = Product.objects.filter(name=new_name).first()
+            if old_p and new_p:
+                old_p.delete()
+            elif old_p:
+                old_p.name = new_name
+                old_p.save()
+
         # Create admin user
         if not User.objects.filter(username='admin').exists():
             admin = User.objects.create_superuser('admin', 'admin@paras.com', 'admin123')
