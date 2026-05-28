@@ -106,7 +106,7 @@ def seed_sample_catalog(apps, schema_editor):
             "is_featured": False,
         },
         {
-            "name": "Prestige Omega Cookware Set",
+            "name": "Prestige Omega Deluxe Cookware Set",
             "description": "Five-piece non-stick cookware set with granite finish for everyday cooking.",
             "price": "2999.00",
             "original_price": "4999.00",
@@ -156,7 +156,7 @@ def seed_sample_catalog(apps, schema_editor):
             "is_featured": False,
         },
         {
-            "name": "Premium Yoga Mat 6mm",
+            "name": "Yoga Mat Premium 6mm",
             "description": "Extra-thick non-slip yoga mat made from comfortable, lightweight material.",
             "price": "1299.00",
             "original_price": "2499.00",
